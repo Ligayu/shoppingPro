@@ -1,20 +1,14 @@
 <template>
   <view class="content">
     <view class="address">
-      <view
-        class="address_info"
-        v-if="address.userName"
-      >
+      <view class="address_info" v-if="address.userName">
         <view class="address_name_wrap">
-          <text>{{address.userName}}</text>
-          <text>{{address.telNumber}}</text>
+          <text>{{ address.userName }}</text>
+          <text>{{ address.telNumber }}</text>
         </view>
-        <view class="address_detail">{{detail}}</view>
+        <view class="address_detail">{{ detail }}</view>
       </view>
-      <button
-        v-else
-        @click="chooseAddress"
-      >获取收货地址</button>
+      <button v-else @click="chooseAddress">获取收货地址</button>
     </view>
 
     <view class="cart">
@@ -22,7 +16,7 @@
       <view class="cart_content">
         <view
           class="cart_item"
-          v-for="(item,index) in  carts"
+          v-for="(item, index) in carts"
           :key="item.goods_id"
         >
           <!-- 1 复选框 -->
@@ -31,26 +25,17 @@
           </checkbox-group>
           <!-- 2 图片 -->
           <view class="goods_img">
-            <image
-              mode="widthFix"
-              :src="item.goods_small_logo"
-            ></image>
+            <image mode="widthFix" :src="item.goods_small_logo"></image>
           </view>
           <!-- 3 商品信息 -->
           <view class="goods_info">
-            <view class="goods_name">{{item.goods_name}}</view>
+            <view class="goods_name">{{ item.goods_name }}</view>
             <view class="goods_price_wrap">
-              <view class="goods_price">￥{{item.goods_price}}</view>
+              <view class="goods_price">￥{{ item.goods_price }}</view>
               <view class="edit_wrap">
-                <view
-                  @click="updateNum(-1,index)"
-                  class="update"
-                >-</view>
-                <view class="val">{{item.count}}</view>
-                <view
-                  @click="updateNum(1,index)"
-                  class="update"
-                >+</view>
+                <view @click="updateNum(-1, index)" class="update">-</view>
+                <view class="val">{{ item.count }}</view>
+                <view @click="updateNum(1, index)" class="update">+</view>
               </view>
             </view>
           </view>
@@ -59,31 +44,27 @@
     </view>
 
     <view class="cart_tool">
-      <checkbox-group  @change="handleAllCheck"  class="all_chk_wrap">
+      <checkbox-group @change="handleAllCheck" class="all_chk_wrap">
         <checkbox :checked="allChecked">全选</checkbox>
       </checkbox-group>
       <view class="all_price_wrap">
-        <view class="all_price_row1">合计: <text>￥{{allPrice}}</text> </view>
+        <view class="all_price_row1"
+          >合计: <text>￥{{ allPrice }}</text>
+        </view>
         <view>包含运费</view>
       </view>
-      <view
-        class="all_order"
-        @click="goPay"
-      >
-        结算({{allCates}})
-      </view>
+      <view class="all_order" @click="goPay"> 结算({{ allCates }}) </view>
     </view>
   </view>
 </template>
 
 <script>
-
 export default {
   data() {
     return {
       address: {},
       // 购物车商品数据
-      carts: []
+      carts: [],
     };
   },
   // 页面加载完毕
@@ -108,12 +89,12 @@ export default {
     // 点击按钮 获取收货地址
     chooseAddress() {
       uni.chooseAddress({
-        success: result => {
+        success: (result) => {
           this.address = result;
           wx.setStorageSync("address", this.address);
         },
         fail: () => {},
-        complete: () => {}
+        complete: () => {},
       });
     },
     // 商品的复选框选中事件
@@ -129,14 +110,14 @@ export default {
         uni.showModal({
           title: "提示",
           content: "您是否舍得删除?😶",
-          success: result => {
+          success: (result) => {
             //  console.log(result);
             if (result.confirm) {
               // 用户点击了删除
               // 对数组中的某一个元素执行删除
               this.carts.splice(index, 1);
             }
-          }
+          },
           //  complete(){
           //  success
           // fail 触发 也会触发  complete
@@ -156,15 +137,15 @@ export default {
       } else {
         uni.showToast({
           title: "您还没有选中商品或者收货地址",
-          icon: "none"
+          icon: "none",
         });
       }
     },
-    // 点击全选 
-    handleAllCheck(){
-      const checked=!this.allChecked;
-      this.carts.forEach(cart=>cart.checked=checked);
-    }
+    // 点击全选
+    handleAllCheck() {
+      const checked = !this.allChecked;
+      this.carts.forEach((cart) => (cart.checked = checked));
+    },
   },
   computed: {
     // 计算收货详细地址
@@ -182,7 +163,7 @@ export default {
     // 淘宝的 结算 算的是  种类
     allCates() {
       // 获取到了 勾选了的 商品的种类
-      return this.carts.filter(cart => cart.checked).length;
+      return this.carts.filter((cart) => cart.checked).length;
     },
     // 全选
     allChecked() {
@@ -190,7 +171,7 @@ export default {
       // every 当空数组调用这个方法的时候 那么它的返回值是true
 
       if (this.carts.length === 0) return false;
-      return this.carts.every(cart => cart.checked);
+      return this.carts.every((cart) => cart.checked);
     },
     // 总的价格
     allPrice() {
@@ -198,7 +179,7 @@ export default {
       // 用 forEach  我们是比较好理解
       // 用 reduce 专门用来计算 总数
       let sum = 0;
-      this.carts.forEach(cart => {
+      this.carts.forEach((cart) => {
         if (cart.checked) {
           sum += cart.goods_price * cart.count;
         }
@@ -206,24 +187,16 @@ export default {
       return sum;
 
       // return  this.carts.reduce((beforeSum,cart)=>cart.checked&&(beforeSum+cart.goods_price*cart.count),0)
-    }
+    },
   },
   watch: {
-    // 为什么这个代码 在后续的改变中不能出现
-    // 有同学 说 只能监控到 表层的
-    // 简单类型 和 引用类型  指向改变
-    // 1 => 2
-    // 引用类型  这些变量 存其实是一个地址而已
-    // carts.a=123 carts.b=123
-    // cart=123;
-    // 复杂数据做监控的时候  deep属性
     carts: {
       deep: true,
       handler(newCarts) {
         uni.setStorageSync("carts", newCarts);
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 
@@ -244,7 +217,6 @@ export default {
       display: flex;
       justify-content: space-between;
     }
-  
   }
 }
 
@@ -267,7 +239,6 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-      
       }
 
       .goods_img {
@@ -338,7 +309,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-   
   }
 
   .all_price_wrap {
@@ -352,7 +322,6 @@ export default {
         font-size: 30rpx;
       }
     }
-
   }
 
   .all_order {

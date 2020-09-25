@@ -89,17 +89,6 @@ export default {
       // 标题颜色的切换选中
       this.activeIndex = index;
       this.rightProductList = allDatas[index].children;
-      //  应国外友人的要求 要优化的
-
-      // 设置右侧scroll-view的 滚动距离为 0
-      // 变化前和变化后都为0
-      // 所以不起作用
-      // 1 原生的小程序不起作用
-      // 2 是uni-app的内置的虚拟dom 发现两个值都一样 都没有重新设置回去
-
-      // 前后两个值不相等的时候 这个属性是生效的!!
-      // 怎能办 ?
-      // Math.random() 0 - 1
       this.scrollTop = Math.random() / 1000;
     },
     // 获取接口的数据

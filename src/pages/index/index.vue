@@ -125,16 +125,6 @@ export default {
 
     .floor_content {
       overflow: hidden;
-      /* 
-		只需要控制后四张图片的高等于 第一张图片的高的一半即可 
-		设计稿 和 rpx 关系
-		mode="widthFix" 设置图片的高度 自己按照图片宽度来设置 
-				给图片标签加高度 没有效果!!!!
-
-		第一张图片 	mode="widthFix"
-		剩下的四张图片 mode="scaleToFill"  同时设置一个高度 
-			scaleToFill 不管图片的宽高比例 直接将图片内容拉伸到相框大小 
-		 */
       navigator {
         float: left;
         width: 33.33%;
