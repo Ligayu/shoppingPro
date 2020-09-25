@@ -4,18 +4,15 @@
     <view class="main">
       <view class="left">
         <view
-          :class="['item',activeIndex===index?'active':'']"
+          :class="['item', activeIndex === index ? 'active' : '']"
           @click="menuClick(index)"
-          v-for="(item,index) in leftMenus"
+          v-for="(item, index) in leftMenus"
           :key="index"
-        >{{item}}</view>
+          >{{ item }}</view
+        >
       </view>
       <!-- right 是滚动容器 -->
-      <scroll-view
-        class="right"
-        scroll-y
-        :scroll-top="scrollTop"
-      >
+      <scroll-view class="right" scroll-y :scroll-top="scrollTop">
         <view
           class="product_group"
           v-for="item in rightProductList"
@@ -23,20 +20,17 @@
         >
           <view class="product_title">
             <text>/</text>
-            <text>{{item.cat_name}}</text>
+            <text>{{ item.cat_name }}</text>
             <text>/</text>
           </view>
           <view class="product_content">
             <navigator
               v-for="item2 in item.children"
               :key="item2.cat_id"
-              :url="'/pages/goods_list/index?id='+item2.cat_id"
+              :url="'/pages/goods_list/index?id=' + item2.cat_id"
             >
-              <image
-                :src="item2.cat_icon"
-                mode="widthFix"
-              ></image>
-              <view>{{item2.cat_name}}</view>
+              <image :src="item2.cat_icon" mode="widthFix"></image>
+              <view>{{ item2.cat_name }}</view>
             </navigator>
           </view>
         </view>
@@ -46,46 +40,6 @@
 </template> 
 
 <script>
-/* 
-1 获取分类页面的数据 
-2 渲染页面
-3 点击标题 切换对应的数据!!! 
-	1 给左侧标题绑定点击事件
-		1 获取对应的索引 控制 标题的激活选中
-	2 控制右边的商品的内容的切换显示 
-4 关于data中的数据
-	1 data中的数据 有两个作用
-		1 页面渲染要使用
-		2 全局变量  
-5 点击左侧菜单 希望右侧的内容 的 滚动条的滚动位置 0 
-  0  jq的案例的时候 可能会碰到过     scrollTop
-  1  微信小程序中组件 scroll-view 
-6 添加一个缓存效果  h5 本地存储有关系  
-  1 页面一打开的时候判断本地存储中有没有数据
-    1 有数据 不要发送新请求了 而是 使用缓存的数据
-    2 没有数据 再发送请求  继续正常的业务 
-      1 需要将接口数据 存储到 本地缓存中 
-
-  2 h5 本地存储
-    1 不管存入的是什么类似 都会被转化为 字符串类型
-    2 使用微信小程序的本地存储  存入的是什么类型 那么就是什么类型 
-  3 还存在问题 ??? 
-    1 用户无法去看新商品了 
-      用户没有清除 缓存的话  一辈子都没有办法买新商品了!!!
-    2 加一个时间好了  
-    3 解决方案
-      1 存储数据的时候 存一个对象 { 时间:存储数据的当下的时间,数组:商品数组 }
-      2 当页面打开了 判断
-        1 先判断有没有缓存数据
-          1 如果有 缓存数据 再去判断 数据有没有过期
-              再去使用缓存数据  否则 发送新请求
-        2 发送新的请求判断
-          1 没有数据 
-          2 数据过期了 
-
-
- 
- */
 import SearchBar from "@/components/SearchBar";
 
 // 当前页面中 全局变量  接口的数据
@@ -104,7 +58,7 @@ export default {
       // 右侧 商品的内容  关联到 选中了的大标题
       rightProductList: [],
       // 右侧容器滚动的距离
-      scrollTop: 0
+      scrollTop: 0,
     };
   },
   onLoad() {
@@ -113,13 +67,13 @@ export default {
     if (category) {
       // 有值  判断数据有没有过期 过期时间 自定义 1 分钟  =60s = 60* 1000
       if (Date.now() - category.time > 60 * 1000) {
-        // 过期了 重新发送请求 
+        // 过期了 重新发送请求
         this.getCategoryList();
       } else {
         // 数据没有过期
         allDatas = category.list;
         // 左侧的标题数组 ["大家电","海外购"]
-        this.leftMenus = allDatas.map(v => v.cat_name);
+        this.leftMenus = allDatas.map((v) => v.cat_name);
         // 大家电对应的商品数据 数组
         this.rightProductList = allDatas[0].children;
       }
@@ -150,23 +104,21 @@ export default {
     },
     // 获取接口的数据
     getCategoryList() {
-      this
-        .request({
-          url: "/categories"
-        })
-        .then(res => {
-          allDatas = res;
+      this.request({
+        url: "/categories",
+      }).then((res) => {
+        allDatas = res;
 
-          // 将数据存储到本地缓存中
-          uni.setStorageSync("category", { time: Date.now(), list: allDatas });
+        // 将数据存储到本地缓存中
+        uni.setStorageSync("category", { time: Date.now(), list: allDatas });
 
-          // 左侧的标题数组 ["大家电","海外购"]
-          this.leftMenus = allDatas.map(v => v.cat_name);
-          // 大家电对应的商品数据 数组
-          this.rightProductList = allDatas[0].children;
-        });
-    }
-  }
+        // 左侧的标题数组 ["大家电","海外购"]
+        this.leftMenus = allDatas.map((v) => v.cat_name);
+        // 大家电对应的商品数据 数组
+        this.rightProductList = allDatas[0].children;
+      });
+    },
+  },
 };
 </script>
 

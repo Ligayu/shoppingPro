@@ -1,45 +1,31 @@
 <template>
   <view class="content">
-
     <view class="address">
-      <view
-        class="address_info"
-        v-if="address.userName"
-      >
+      <view class="address_info" v-if="address.userName">
         <view class="address_name_wrap">
-          <text>{{address.userName}}</text>
-          <text>{{address.telNumber}}</text>
+          <text>{{ address.userName }}</text>
+          <text>{{ address.telNumber }}</text>
         </view>
-        <view class="address_detail">{{detail}}</view>
+        <view class="address_detail">{{ detail }}</view>
       </view>
-      <button
-        v-else
-        @click="chooseAddress"
-      >获取收货地址</button>
+      <button v-else @click="chooseAddress">获取收货地址</button>
     </view>
 
     <view class="cart">
       <view class="cart_title">结算</view>
       <view class="cart_content">
-        <view
-          class="cart_item"
-          v-for="item in  carts"
-          :key="item.goods_id"
-        >
+        <view class="cart_item" v-for="item in carts" :key="item.goods_id">
           <!-- 2 图片 -->
           <view class="goods_img">
-            <image
-              mode="widthFix"
-              :src="item.goods_small_logo"
-            ></image>
+            <image mode="widthFix" :src="item.goods_small_logo"></image>
           </view>
           <!-- 3 商品信息 -->
           <view class="goods_info">
-            <view class="goods_name">{{item.goods_name}}</view>
+            <view class="goods_name">{{ item.goods_name }}</view>
             <view class="goods_price_wrap">
-              <view class="goods_price">￥{{item.goods_price}}</view>
+              <view class="goods_price">￥{{ item.goods_price }}</view>
               <view class="edit_wrap">
-                <view class="val"> X {{item.count}}</view>
+                <view class="val"> X {{ item.count }}</view>
               </view>
             </view>
           </view>
@@ -49,40 +35,34 @@
 
     <view class="cart_tool">
       <view class="all_price_wrap">
-        <view class="all_price_row1">合计: <text>￥{{allPrice}}</text> </view>
+        <view class="all_price_row1"
+          >合计: <text>￥{{ allPrice }}</text>
+        </view>
         <view>包含运费</view>
       </view>
       <view class="all_order">
-        支付({{allCates}})
-        <button
-          open-type="getUserInfo"
-          @getuserinfo="getUserInfo"
-        >获取token</button>
+        支付({{ allCates }})
+        <button open-type="getUserInfo" @getuserinfo="getUserInfo">
+          获取token
+        </button>
       </view>
     </view>
   </view>
 </template>
 
 <script>
-/* 
-1 点击支付按钮
-2 创建订单 
-  1 获取用户信息 button  getUserinfo 中 获取
-  2 
-
- */
 export default {
   data() {
     return {
       address: {},
       // 购物车商品数据
-      carts: []
+      carts: [],
     };
   },
   onShow() {
     const carts = uni.getStorageSync("carts") || [];
     // 支付页面只需要显示 用户勾选了的商品即可
-    this.carts = carts.filter(v => v.checked);
+    this.carts = carts.filter((v) => v.checked);
     this.address = uni.getStorageSync("address") || {};
   },
 
@@ -100,12 +80,12 @@ export default {
       const { token } = await this.request({
         url: "/users/wxlogin",
         data: { encryptedData, rawData, iv, signature, code },
-        method: "POST"
+        method: "POST",
       });
 
       // 创建订单要的请求头参数
       const header = {
-        Authorization: token
+        Authorization: token,
       };
 
       // 创建订单要的请求体参数
@@ -115,11 +95,11 @@ export default {
         // 收货地址
         consignee_addr: this.detail,
         // 订单数组
-        goods: this.carts.map(cart => ({
+        goods: this.carts.map((cart) => ({
           goods_id: cart.goods_id,
           goods_number: cart.count,
-          goods_price: cart.goods_price
-        }))
+          goods_price: cart.goods_price,
+        })),
       };
 
       // 执行创建订单 order_number 订单编号
@@ -127,7 +107,7 @@ export default {
         url: "/my/orders/create",
         method: "post",
         data: orderData,
-        header  //前面获取的请求头
+        header, //前面获取的请求头
       });
 
       // 发送订单编号  获取支付的参数
@@ -135,7 +115,7 @@ export default {
         url: "/my/orders/req_unifiedorder",
         header,
         data: { order_number },
-        method: "post"
+        method: "post",
       });
 
       // 发送pay支付参数 完成调起 微信支付!!!
@@ -146,11 +126,11 @@ export default {
         url: "/my/orders/chkOrder",
         data: { order_number },
         header,
-        method: "post"
+        method: "post",
       });
 
       uni.showToast({ title: "支付成功" });
-    }
+    },
   },
   computed: {
     // 计算收货详细地址
@@ -162,22 +142,16 @@ export default {
         this.address.detailInfo
       );
     },
-    // 总的结算数   种类 而 不是数量
-    // 京东的 结算 算的是  数量
 
-    // 淘宝的 结算 算的是  种类
     allCates() {
       // 获取到了 勾选了的 商品的种类
-      return this.carts.filter(cart => cart.checked).length;
+      return this.carts.filter((cart) => cart.checked).length;
     },
 
     // 总的价格
     allPrice() {
-      // 要求 计算选中了的商品的   单价 * 数量  叠加
-      // 用 forEach  我们是比较好理解
-      // 用 reduce 专门用来计算 总数
       let sum = 0;
-      this.carts.forEach(cart => {
+      this.carts.forEach((cart) => {
         if (cart.checked) {
           sum += cart.goods_price * cart.count;
         }
@@ -185,8 +159,8 @@ export default {
       return sum;
 
       // return  this.carts.reduce((beforeSum,cart)=>cart.checked&&(beforeSum+cart.goods_price*cart.count),0)
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -207,7 +181,6 @@ export default {
       display: flex;
       justify-content: space-between;
     }
-   
   }
 }
 
@@ -230,7 +203,6 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
-     
       }
 
       .goods_img {
@@ -301,7 +273,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    
   }
 
   .all_price_wrap {
@@ -315,7 +286,6 @@ export default {
         font-size: 30rpx;
       }
     }
-
   }
 
   .all_order {
